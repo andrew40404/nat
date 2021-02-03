@@ -12,7 +12,8 @@
 
 - You are now at the Kubernetes deployment page. You need to specify some details about the cluster
 
-- Choose a plan **standard** or **free** , the free plan only has one worker node and no subnet, to provision a standard cluster, you will need to upgrade your account to Pay-As-You-Go
+- Choose a plan **standard** or **free** , the free plan only has one worker node and no subnet, to provision a standard cluster, 
+  you will need to upgrade your account to Pay-As-You-Go
 
 - To upgrade to a Pay-As-You-Go account, complete the following steps:
 
@@ -32,18 +33,16 @@
 
 ![NAT_install on ibm cloud_html_72496e6b0b2c820d](https://user-images.githubusercontent.com/5286796/106412223-36e32200-646d-11eb-822b-4abe72488d00.png)
 
--   Choose 	Single or Multizone, in single zone your data is only kept in on 	datacenter, on the
-
-​      other hand with Multizone it is distributed to multiple zones, thus safer in an unforeseen
-
-​      zone failure
+-  Choose Single or Multizone, in single zone your data is only kept in on 	datacenter, on the
+   other hand with Multizone it is distributed to multiple zones, thus safer in an unforeseen
+   zone failure
 
 - If you wish to use Multizone please set up your account with[VRF
 
 - If at your current location selection, there is no available Virtual LAN, a new VLAN will be created for you
 - Choose a Worker node setup or use the preselected one, set Worker node amount per zone
-- Choose **Master Service Endpoint**. In VRF-enabled accounts, you can choose private-only to make your master accessible on the private network or via VPN tunnel. Choose public-only to make your master publicly accessible. When you have a VRF-enabled account, your cluster is set up by default to use both private and public endpoints.
-   Give desired **tags** to your cluster, for more information visit tags
+- Choose **Master Service Endpoint**. In VRF-enabled accounts, you can choose private-only to make your master accessible on the private network or via VPN tunnel. Choose         public-only to make your master publicly accessible. When you have a VRF-enabled account, your cluster is set up by default to use both private and public endpoints.
+  Give desired **tags** to your cluster, for more information visit tags
 - Click **create**
    • Wait for your cluster to be provisioned
    • Your cluster is ready for usage
@@ -73,9 +72,6 @@ The Block Storage plug-in is a persistent, high-performance iSCSI storage that y
 
 # **Step 3 **Installing NATS
 
-
- 
-
 1. Install [Docker](https://docs.docker.com/install)  
 2. Install [Helm 	Client](https://helm.sh/docs/using_helm/#installing-the-helm-client) 
 3. Install [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl)
@@ -97,7 +93,6 @@ $ wget -O /tmp/nats-ss-0.0.1.tgz https://github.com/ssibm/iks-nats-streaming/raw
 2. Create deployment yaml files for NATS Streaming StatefulSet, Service, Persistent Volume, and Persistent Volume Claim. In the command below, persistence will be set to local
 
 
-
 ```sh
 $ mkdir -p /tmp/helm-output
  $ helm template --name test-drive --set persistence.local.enabled=true --output-dir /tmp/helm-output /tmp/nats-ss-0.0.1.tgzOutput:
@@ -110,7 +105,6 @@ $ mkdir -p /tmp/helm-output
 3. Deploy NATS Streaming on IKS Cluster using the deployment files
 
 
-
 ```sh
 $ kubectl apply --recursive --filename /tmp/helm-output/nats-ssOutput:
  persistentvolume/pv-nats-ss created
@@ -120,7 +114,6 @@ $ kubectl apply --recursive --filename /tmp/helm-output/nats-ssOutput:
 ```
 
 4. It may take few minutes for the Persistence Volume Claim to finish binding and for the Pods to be in Running state. Verify using the following command
-
  
 
 ```sh

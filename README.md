@@ -2,7 +2,7 @@
 
 This document will describe how to install NATS on IBM Cloud using Kubernetes services.
 
-**Step 1 - provision Kubernetes Cluster**
+**Step 1 - Provision Kubernetes Cluster**
 
 - Click the **Catalog** button on the top
 - Select **Service** from the **Catalog**

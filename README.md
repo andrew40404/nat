@@ -1,3 +1,5 @@
+# Installing NATS on IBM Cloud
+
 This document will describe how to install NATS on IBM Cloud using Kubernetes services.
 
 **Step 1 - provision Kubernetes Cluster**
@@ -62,7 +64,7 @@ The Block Storage plug-in is a persistent, high-performance iSCSI storage that y
 
 ![mongodb_html_bcca9b451248ae84](https://user-images.githubusercontent.com/5286796/106396722-c79b0d00-642f-11eb-81f9-084f9c9f04be.png)
 
-# Step 3 Installing NATS
+**Step 3 Installing NATS**
 
 **Prerequisites**
 
@@ -105,7 +107,7 @@ There are two alternatives to use LoadBalancer services:
 
 1. Use random load balancer IPs using an **initContainer** that waits for the IPs to be ready and discover them automatically
 
-```sh
+```yaml
 architecture=replicaset
 replicaCount=2
 externalAccess.enabled=true
@@ -164,7 +166,7 @@ You can use custom Prometheus rules for Prometheus operator by using the prometh
 
 metrics:
 
-```sh
+```yaml
 enabled: true
 prometheusRule:
   enabled: true

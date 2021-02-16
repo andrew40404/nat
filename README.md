@@ -11,7 +11,7 @@ This document will describe how to install NATS on IBM Cloud using Kubernetes se
 ![NAT_install on ibm cloud_html_46d1c04e26ba5eea](https://user-images.githubusercontent.com/5286796/106412230-39de1280-646d-11eb-85d8-b48491ff1d12.png)
 
 - You are now at the Kubernetes deployment page. You need to specify some information about the cluster.
-- Choose either of the following plans; **standard** or **free**. The free plan only have one worker node and no subnet. To provision a standard cluster. You will need to upgrade your account to Pay-As-You-Go
+- Choose either of the following plans; **standard** or **free**. The free plan only has one worker node and no subnet. To provision a standard cluster. You will need to upgrade your account to Pay-As-You-Go
 - To upgrade to a Pay-As-You-Go account, complete the following steps:
 - In the console, go to Manage > Account.
 - Select Account settings and click `Add credit card`.
@@ -52,8 +52,8 @@ The Block Storage plug-in is a persistent, high-performance iSCSI storage that y
   
 ![mongodb_html_80e526461a17c251](https://user-images.githubusercontent.com/5286796/106396725-c9fd6700-642f-11eb-8606-71998e0bbbc2.png)
    
-- On the application page, click in the dot next to the cluster you wish to use
-- Click on Enter or Select Namespace and choose the default Namespace or use a custom one (if you get error please wait 30 minutes for the cluster to finalize)
+- On the application page, click on the dot next to the cluster you wish to use
+- Click on Enter or Select Namespace and choose the default Namespace or use a custom one (if you get an error please wait 30 minutes for the cluster to finalize)
    
 ![mongodb_html_c5a3e57a3c6cd652](https://user-images.githubusercontent.com/5286796/106396724-c964d080-642f-11eb-8e55-c82480054778.png)
    

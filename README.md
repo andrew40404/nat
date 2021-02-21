@@ -64,142 +64,56 @@ The Block Storage plug-in is a persistent, high-performance iSCSI storage that y
 
 ## Step 3 - Installing NATS
 
-### Prerequisites
+1. Install [Docker](https://docs.docker.com/install)  
+2. Install [Helm 	Client](https://helm.sh/docs/using_helm/#installing-the-helm-client) 
+3. Install [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/#install-kubectl)
+4. Install [IBM Cloud CLI](https://cloud.ibm.com/docs/cli/reference/ibmcloud?topic=cloud-cli-install-ibmcloud-cli#shell_install)
+5. Install IBM Cloud Kubernetes service (IKS) plugin
+6. Login IBM Cloud account
+7. Initialize IKS plugin
+8. Set kubectl to manage IKS cluster
+9. Verify kubectl settings for cluster
 
-- IBM Cloud Block Storage plug-in  
-- Kubernetes 1.12+
-- Helm 3.1.0
-- PV provisioner support in the underlying infrastructure
+### Step 4 Deploy NATS
 
-
-### Installation 
-
-To install the chart with the release name my-release:
-
-```sh
-$ helm install my-release bitnami/mongodb
-```
-The command deploys MongoDB on the Kubernetes cluster in the default configuration. The [Parameters](https://hub.kubeapps.com/#parameters) section lists the parameters that can be configured during installation.
-
-### Initialize a fresh instance
-
-The [Bitnami MongoDB](https://github.com/bitnami/bitnami-docker-mongodb) image allows you to use your custom scripts to initialize a fresh instance. In order to execute the scripts, you can specify them using the initdbScripts parameter as dict.
-
-You can also set an external ConfigMap with all the initialization scripts. This is done by setting the initdbScriptsConfigMap parameter. Note that this will override the previous option.
-
-The allowed extensions are .sh, and .js.
-
-### Accessing MongoDB nodes from outside the cluster
-
-In order to access MongoDB nodes from outside the cluster when using a replica set architecture, a specific service per MongoDB pod will be created. 
-
-There are two ways of configuring external access:
-
-- Using LoadBalancer services
-- Using NodePort services
-
-### Using loadbalancer services
-
-There are two alternatives to use LoadBalancer services:
-
-1. Use random load balancer IPs using an **initContainer** that waits for the IPs to be ready and discover them automatically
-
-```yaml
-architecture=replicaset
-replicaCount=2
-externalAccess.enabled=true
-externalAccess.service.type=LoadBalancer
-externalAccess.service.port=27017
-externalAccess.autoDiscovery.enabled=true
-serviceAccount.create=true
-rbac.create=true
-```
-> Note: This option requires creating RBAC rules on clusters where RBAC policies are enabled.
-
-2.  Manually specify the load balancer IPs:
+1. Download NATS Streaming server helm package
 
 ```sh
-architecture=replicaset
-replicaCount=2
-externalAccess.enabled=true
-externalAccess.service.type=LoadBalancer
-externalAccess.service.port=27017
-externalAccess.service.loadBalancerIPs[0]='external-ip-1'
-externalAccess.service.loadBalancerIPs[1]='external-ip-2'}
+$ wget -O /tmp/nats-ss-0.0.1.tgz https://github.com/ssibm/iks-nats-streaming/raw/master/deploy/nats-ss-0.0.1.tgz
 ```
 
-> Note: You should know the load balancer IP’s in advance so that each MongoDB node advertised hostname is configured with it.
-
-### Using nodeport services
-
-Manually specify the node ports to use:
+2. Create deployment yaml files for NATS Streaming StatefulSet, Service, Persistent Volume, and Persistent Volume Claim. In the command below, persistence will be set to local
 
 ```sh
-architecture=replicaset
-replicaCount=2
-externalAccess.enabled=true
-externalAccess.service.type=NodePort
-externalAccess.service.nodePorts[0]='node-port-1'
-externalAccess.service.nodePorts[1]='node-port-2'
+$ mkdir -p /tmp/helm-output
+ $ helm template --name test-drive --set persistence.local.enabled=true --output-dir /tmp/helm-output /tmp/nats-ss-0.0.1.tgzOutput:
+ wrote /tmp/helm-output/nats-ss/templates/pv.yaml
+ wrote /tmp/helm-output/nats-ss/templates/pvc.yaml
+ wrote /tmp/helm-output/nats-ss/templates/service.yaml
+ wrote /tmp/helm-output/nats-ss/templates/statefulset.yaml
 ```
 
-> Note: You need to know in advance the node ports that will be exposed so each MongoDB node advertised hostname is configured with it.
+3. Deploy NATS Streaming on IKS Cluster using the deployment files
 
-### Persistence
-
-The [Bitnami MongoDB](https://github.com/bitnami/bitnami-docker-mongodb) image stores the MongoDB data and configurations at the /bitnami/mongodb path of the container.
-
-The chart mounts a [Persistent Volume](http://kubernetes.io/docs/user-guide/persistent-volumes/) at this location. The volume is created using dynamic volume provisioning.
-
-### Adjust permissions of persistent volume mountpoint
-
-As the image runs as non-root by default, it is necessary to adjust the ownership of the persistent volume so that the container can write data into it. By default, the chart is configured to use Kubernetes Security Context to automatically change the ownership of the volume. However, this feature does not work in all Kubernetes distributions.
-
-As an alternative, this chart supports using an initContainer to change the ownership of the volume before mounting it in the final destination. You can enable this initContainer by setting volumePermissions.enabled to true.
-
-### Using Prometheus rules
-
-You can use custom Prometheus rules for Prometheus operator by using the prometheusRule parameter, see below a basic configuration example:
-
-metrics:
-
-```yaml
-enabled: true
-prometheusRule:
-  enabled: true
-  rules:
-  - name: rule1
-  rules:
-  alert: HighRequestLatency
-  expr: job:request_latency_seconds:mean5m{job="myjob"} > 0.5
-  for: 10m
-  labels:
-  severity: page
-  annotations:
-  summary: High request latency
+```sh
+$ kubectl apply --recursive --filename /tmp/helm-output/nats-ssOutput:
+ persistentvolume/pv-nats-ss created
+ persistentvolumeclaim/pvc-nats-ss created
+ service/test-drive-nats-ss created
+ statefulset.apps/test-drive-nats-ss create
 ```
 
-### Enabling SSL/TLS
+4. It may take few minutes for the Persistence Volume Claim to finish binding and for the Pods to be in Running state. Verify using the following command
 
-This container supports enabling SSL/TLS between nodes in the cluster, as well as between mongo clients and nodes, by setting the MONGODB_EXTRA_FLAGS and MONGODB_CLIENT_EXTRA_FLAGS environment variables, together with the correct MONGODB_ADVERTISED_HOSTNAME. To enable full TLS encryption set tls.enabled to true
+```sh
+$ kubectl get all -l release=test-driveNAME READY STATUS RESTARTS AGE
+ pod/test-drive-nats-ss-0 1/1 Running 0 6m55sNAME TYPE CLUSTER-IP EXTERNAL-IP PORT(S) AGE
+ service/test-drive-nats-ss LoadBalancer 172.21.108.200 169.46.126.110 4222:30882/TCP,8222:30685/TCP 6m55sNAME DESIRED CURRENT AGE
+ statefulset.apps/test-drive-nats-ss 1 1 6m55s
+```
 
-### Using your own CA
+5. After the Pods are in the  **Running** state, go to **http://<EXTERNAL-IP>:8222 ** to confirm NATS Streaming monitoring page loads successfully.
 
-To use your own CA set tls.caCert and tls.caKey with appropriate base64 encoded data. The secrets-ca.yaml will utilise this data to create secret. 
-
-### Accessing the cluster 
-
-To access the cluster you will need to enable the initContainer which generates the MongoDB server/client pem needed to access the cluster. Please ensure that you include the $my_hostname section with your actual hostname and the alternative hostnames section should contain the hostnames you want to allow access to the MongoDB replica set.
-
-### Starting the cluster
-
-After the certs have been generated and made available to the containers at the correct mount points, the MongoDB server will be started with TLS enabled. The options for the TLS mode will be (disabled|allowTLS|preferTLS|requireTLS). This value can be changed via the MONGODB_EXTRA_FLAGS field using the tlsMode. The client should now be able to connect to the TLS enabled cluster with the provided certs.
-
-### Setting Pod's affinity
-
-This chart allows you to set your custom affinity using the XXX.affinity parameter(s). Find more information about Pod's affinity in the [kubernetes documentation](https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity).
-
-As an alternative, you can use the preset configurations for pod affinity, pod anti-affinity, and node affinity available at the [bitnami/common](https://github.com/bitnami/charts/tree/master/bitnami/common#affinities) chart. To do so, set the XXX.podAffinityPreset, 
 
 The installation is done. Enjoy!
 

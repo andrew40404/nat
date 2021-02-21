@@ -74,7 +74,7 @@ The Block Storage plug-in is a persistent, high-performance iSCSI storage that y
 8. Set kubectl to manage IKS cluster
 9. Verify kubectl settings for cluster
 
-### Step 4 Deploy NATS
+### Step 4 - Deploy NATS
 
 1. Download NATS Streaming server helm package
 

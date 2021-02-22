@@ -112,7 +112,7 @@ $ kubectl get all -l release=test-driveNAME READY STATUS RESTARTS AGE
  statefulset.apps/test-drive-nats-ss 1 1 6m55s
 ```
 
-5. After the Pods are in the  **Running** state, go to **http://**<EXTERNAL-IP>**:8222** to confirm NATS Streaming monitoring page loads successfully.
+5. After the Pods are in the  **Running** state, go to **http://  < EXTERNAL-IP >  :8222** to confirm NATS Streaming monitoring page loads successfully.
 
 
 The installation is done. Enjoy!
